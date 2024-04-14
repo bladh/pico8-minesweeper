@@ -28,21 +28,22 @@ function _draw()
 end
 
 function draw_board(board)
-  for i=1,board.width do
-    for j=1,board.height do
-      local tile = board.f[i][j]
+
+  for i=0,board.width-1 do
+    for j=0,board.height-1 do
+      local tile = board.f[i+1][j+1]
       if tile.flag == 0 do
-        spr(1, i*8, j*8)
+        spr(1, i*8+ho, j*8+vo)
       elseif tile.flag == 1 do
-        print(board.f[i][j].v, i*8+2,j*8+2, get_color(board.f[i][j].v))
+        print(board.f[i+1][j+1].v, i*8+2+ho,j*8+2+vo, get_color(board.f[i+1][j+1].v))
       elseif tile.flag == 2 do
-        spr(3, i*8, j*8)
+        spr(3, i*8+ho, j*8+vo)
       elseif tile.flag == 3 do
-        spr(4, i*8, j*8)
+        spr(4, i*8+ho, j*8+vo)
       end
     end
   end
-  spr(2, selection.x*8, selection.y*8)
+  spr(2, (selection.x-1)*8+ho, (selection.y-1)*8+vo)
   if winner do
     print("congratulations!",0,0,7)
   elseif playing == false do
@@ -57,6 +58,8 @@ function init_game(mines, width, height)
   flags = 0
   board_width = width
   board_height = height
+  ho = (128-(width*8))/2
+  vo = (128-(height*8))/2
   safe_tiles = (board_width * board_height) - num_mines
   board = init_board(board_width,board_height)
   add_mines(board,num_mines)
@@ -259,11 +262,11 @@ function update_menu(mstate)
   if btnp(❎) and not mstate.customizing do
     if mstate.selection == 0 do
       -- easy game
-      init_game(5,5,5)
+      init_game(12,8,8)
     elseif mstate.selection == 1 do
-      init_game(12, 8, 8)
+      init_game(30, 10, 10)
     elseif mstate.selection == 2 do
-      init_game(30, 12, 12)
+      init_game(60, 13, 13)
     elseif mstate.selection == 3 do
       customize()
     end
