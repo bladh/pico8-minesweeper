@@ -3,6 +3,9 @@ version 42
 __lua__
 function _init()
   state = 0
+  shake = 0
+  shakex = 0
+  shakey = 0
   mstate = init_menu()
 end
 
@@ -28,6 +31,17 @@ function _draw()
 end
 
 function draw_board(board)
+  if shake > 0 do
+    shakex = rnd(shake)-(shake/2)
+    shakey = rnd(shake)-(shake/2)
+    shake -= 2
+    vo += shakey
+    ho += shakex
+  else
+    shake = 0
+    shakex = 0
+    shakey = 0
+  end
 
   for i=0,board.width-1 do
     for j=0,board.height-1 do
@@ -51,6 +65,9 @@ function draw_board(board)
   else
     print("number of mines: "..(num_mines-flags),0,0,7)
   end
+  
+  vo -= shakey
+  ho -= shakex
 end
 -->8
 function init_game(mines, width, height)
@@ -195,6 +212,7 @@ end
 
 function game_over(board)
   playing = false
+  shake = 30
   for x=1,board.width do
     for y=1, board.height do
       if board.f[x][y].v == "x" do
