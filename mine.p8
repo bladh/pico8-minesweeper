@@ -72,6 +72,7 @@ end
 -->8
 function init_game(mines, width, height)
   num_mines = mines
+  clicked = false
   flags = 0
   board_width = width
   board_height = height
@@ -109,38 +110,68 @@ function init_board(width, height)
   return board
 end
 
-function add_mines(board, mines)
+function add_mines(board, startmines)
+  local mines = startmines
   if mines > ((board.width*board.height)-1) do
     return
   end
+  local fails = 0
+  ::mineplacement::
+  mines = startmines
+  fails = 0
   while mines > 0 do
     local added = add_mine(board)
     if added do
       mines-=1
+    else
+      fails += 1
+    end
+    if fails > 50 do
+      init_board(board.width, board.height)
+      goto mineplacement
     end
   end
 end
 
 function add_mine(board)
- x = flr(rnd(board.width))+1
- y = flr(rnd(board.height))+1
- if x == 1 or x == board.width do
-   if y == 1 or y == board.height do
-     return false
-   end
- end
- if board.f[x][y].v != "x" do
-    board.f[x][y].v = "x"
-    return true
-  else
+  local x = flr(rnd(board.width))+1
+  local y = flr(rnd(board.height))+1
+  if board.f[x][y].v == "x" do
+    return
+  end
+  local adj = 0
+  for x2=x-1,x+1 do
+    for y2=y-1,y+1 do
+      if x2 > 0 and y2 > 0 and x < board.width and y < board.height do
+        if board.f[x2][y2].v == "x" do
+          adj += 1
+        end
+      end
+    end
+  end
+  if adj > 4 do
     return false
   end
+  board.f[x][y].v = "x"
+  return true
+end
+
+function move_mines(board, x, y)
+  if board.f[x][y].v != "x" do
+    return
+  end
+  while board.f[x][y].v == "x" do
+    board.f[x][y].v = 0
+    add_mines(board, 1)
+  end
+  set_numbers(board)
 end
 
 function set_numbers(board)
   for i=1, board.width do
     for j=1, board.height do
       if board.f[i][j].v != "x" do
+        board.f[i][j].v = 0
         for x=i-1,i+1 do
           for y=j-1,j+1 do
             if x > 0 and y > 0 and x <= board.width and y <= board.height do
@@ -225,6 +256,10 @@ end
 function inputs()
   if btnp(❎) do
     local tile = board.f[selection.x][selection.y]
+    if not clicked do
+      clicked = true
+      move_mines(board, selection.x, selection.y)
+    end
     if tile.flag == 0 do
       reveal(board, selection.x, selection.y)
     end
@@ -280,11 +315,11 @@ function update_menu(mstate)
   if btnp(❎) and not mstate.customizing do
     if mstate.selection == 0 do
       -- easy game
-      init_game(12,8,8)
+      init_game(9,8,8)
     elseif mstate.selection == 1 do
-      init_game(30, 10, 10)
+      init_game(20, 10, 10)
     elseif mstate.selection == 2 do
-      init_game(60, 13, 13)
+      init_game(45, 13, 13)
     elseif mstate.selection == 3 do
       customize()
     end
