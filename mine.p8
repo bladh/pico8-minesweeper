@@ -112,7 +112,7 @@ end
 
 function add_mines(board, startmines)
   local mines = startmines
-  if mines > ((board.width*board.height)-1) do
+  if mines > ((board.width*board.height)-9) do
     return
   end
   local fails = 0
@@ -160,11 +160,27 @@ function move_mines(board, x, y)
   if board.f[x][y].v != "x" do
     return
   end
-  while board.f[x][y].v == "x" do
-    board.f[x][y].v = 0
-    add_mines(board, 1)
+  local minecount = region_clear_mines(board, x, y)
+  while minecount != 0 do
+    add_mines(board, minecount)
+    minecount = region_clear_mines(board, x, y)
   end
   set_numbers(board)
+end
+
+function region_clear_mines(board, x, y)
+  local minecount = 0
+  for x2=x-1,x+1 do
+    for y2=y-1,y+1 do
+      if x2 > 0 and y2 > 0 and x < board.width and y < board.height do
+        if board.f[x2][y2].v == "x" do
+          board.f[x2][y2].v = 0
+          minecount+=1
+        end
+      end
+    end
+  end
+  return minecount
 end
 
 function set_numbers(board)
