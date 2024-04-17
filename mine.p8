@@ -3,9 +3,6 @@ version 42
 __lua__
 function _init()
   state = 0
-  shake = 0
-  shakex = 0
-  shakey = 0
   mstate = init_menu()
 end
 
@@ -89,6 +86,9 @@ function init_game(mines, width, height)
   playing=true
   winner = false
   state = 1
+  shake = 0
+  shakex = 0
+  shakey = 0
 end
 
 function init_board(width, height)
