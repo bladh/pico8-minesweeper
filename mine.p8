@@ -63,6 +63,7 @@ function draw_board(board)
     print("number of mines: "..(num_mines-flags),0,0,7)
     print("❎ to reveal tile, 🅾️ to flag", 0, 120, 13)
   end
+  print(seconds, 0, 8, 6)
   
   vo -= shakey
   ho -= shakex
@@ -89,6 +90,8 @@ function init_game(mines, width, height)
   shake = 0
   shakex = 0
   shakey = 0
+  ticks = 0
+  seconds = 0
 end
 
 function init_board(width, height)
@@ -274,6 +277,11 @@ function game_over(board)
 end
 -->8
 function inputs()
+  ticks += 1
+  if ticks > 30 do
+    ticks = 0
+    seconds += 1
+  end
   if btnp(❎) do
     local tile = board.f[selection.x][selection.y]
     if not clicked do
