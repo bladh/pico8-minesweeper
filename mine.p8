@@ -64,6 +64,7 @@ function draw_board(board)
     print("your head asplode!", 0, 0, 8)
   else
     print("number of mines: "..(num_mines-flags),0,0,7)
+    print("❎ to reveal tile, 🅾️ to flag", 0, 120, 13)
   end
   
   vo -= shakey
