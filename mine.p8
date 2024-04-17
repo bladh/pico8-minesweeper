@@ -233,6 +233,9 @@ function reveal(board, x, y)
   if board.f[x][y].flag == 1 do 
     return
   end
+  if board.f[x][y].flag == 2 do
+    flags -= 1
+  end
   board.f[x][y].flag = 1
   if board.f[x][y].v == "x" do
     game_over(board)
