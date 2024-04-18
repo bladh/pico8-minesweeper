@@ -161,9 +161,6 @@ function add_mine(board)
 end
 
 function move_mines(board, x, y)
-  if board.f[x][y].v != "x" do
-    return
-  end
   local minecount = region_clear_mines(board, x, y)
   while minecount != 0 do
     add_mines(board, minecount)
