@@ -4,6 +4,9 @@ __lua__
 function _init()
   state = 0
   mstate = init_menu()
+  cheight = 8
+  cwidth = 8
+  cmines = 9
 end
 
 function _update()
@@ -331,13 +334,67 @@ function init_menu()
   return mstate
 end
 
+function valid_mines()
+  return flr((cwidth*cheight)*0.6)
+end
+
 function update_menu(mstate)
   if btnp(⬇️) and mstate.selection < mstate.maxselection do
     mstate.selection += 1
   elseif btnp(⬆️) and mstate.selection > 0 do
     mstate.selection -= 1
   end
-  if btnp(❎) and not mstate.customizing do
+  if mstate.customizing do
+    if cmines > valid_mines() do
+      cmines = valid_mines()
+    end
+    if btnp(⬅️) do
+      if mstate.selection == 0 do
+        if cwidth > 4 do
+          cwidth -= 1
+        end
+      end
+      if mstate.selection == 1 do
+        if cheight > 4 do
+          cheight -= 1
+        end
+      end
+      if mstate.selection == 2 do
+        if cmines > 2 do
+          cmines -= 1
+        else
+          cmines = valid_mines()
+        end
+      end
+    end
+    if btnp(➡️) do
+      if mstate.selection == 0 do
+        if cwidth < 16 do
+          cwidth += 1
+        end
+      end
+      if mstate.selection == 1 do
+        if cheight < 13 do
+          cheight += 1
+        end
+      end
+      if mstate.selection == 2 do
+        if cmines < valid_mines() do
+          cmines += 1
+        end
+      end
+    end
+    if btnp(🅾️) do
+      mstate.customizing = false
+      mstate.selection = 0
+      mstate.maxselection = 3
+    end
+    if btnp(❎) do
+      init_game(cmines, cwidth, cheight)
+    end
+    return
+  end
+  if btnp(❎) do
     if mstate.selection == 0 do
       -- easy game
       init_game(9,8,8)
@@ -346,25 +403,41 @@ function update_menu(mstate)
     elseif mstate.selection == 2 do
       init_game(45, 13, 13)
     elseif mstate.selection == 3 do
-      customize()
+      customize(mstate)
     end
   end     
 end
 
-function customize()
-
+function customize(mstate)
+  mstate.customizing = true
+  mstate.selection = 0
+  mstate.maxselection = 2
 end
+
 function draw_menu(mstate)
   print("m i n e", 12, 12, 7)
   print("s w e e p e r", 24, 20, 6)
  
   sspr(0,0,10*8,16*8, 48, 0) 
-  print("easy", 8, 8*4, 7)
-  print("medium", 8, 8*5, 7)
-  print("hard", 8, 8*6, 7)
-  print("custom", 8, 8*7, 7)
-  print(">", 4, (8*4)+(mstate.selection*8), 6)
-  print("v 0.9", 0, 120, 13)
+  
+  if mstate.customizing do
+    print("width", 8, 8*4, 7)
+    print("height", 8, 8*5, 7)
+    print("mines", 8, 8*6, 7)
+    print(cwidth, 56, 8*4, 7)
+    print(cheight, 56, 8*5, 7)
+    print(cmines, 56, 8*6, 7)
+    print("⬅️➡️", 36, (8*4)+(mstate.selection*8))
+    print("🅾️ go back", 8, 8*8, 13)
+    print("❎ start game", 8, 8*9, 13)
+  else
+    print("easy", 8, 8*4, 7)
+    print("medium", 8, 8*5, 7)
+    print("hard", 8, 8*6, 7)
+    print("custom", 8, 8*7, 7)
+    print(">", 4, (8*4)+(mstate.selection*8), 6)
+    print("v 1.0", 0, 120, 13)
+  end
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000666666000000000005555000000000000000000
